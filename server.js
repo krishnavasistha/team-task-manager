@@ -9,15 +9,15 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// ✅ ROOT ROUTE (THIS FIXES YOUR ISSUE)
 app.get("/", (req, res) => {
   res.send("API is working 🚀");
 });
 
-// ✅ MongoDB
-mongoose.connect("mongodb://admin:admin123@ac-moakdly-shard-00-00.fy8lnc0.mongodb.net:27017,ac-moakdly-shard-00-01.fy8lnc0.mongodb.net:27017,ac-moakdly-shard-00-02.fy8lnc0.mongodb.net:27017/taskdb?ssl=true&replicaSet=atlas-tqzjmc-shard-0&authSource=admin&retryWrites=true&w=majority")
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
+
+mongoose.connect(process.env.MONGO_URI);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log("Server running"));
 
 // Models
 const User = mongoose.model("User", {
