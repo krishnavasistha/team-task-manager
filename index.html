@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Task Manager</h2>
+
+<input id="email" placeholder="email"><br>
+<input id="password" placeholder="password"><br>
+<button onclick="login()">Login</button>
+
+<h3>Create Task</h3>
+<input id="title" placeholder="title">
+<button onclick="createTask()">Add</button>
+
+<h3>Tasks</h3>
+<ul id="tasks"></ul>
+
+<script>
+let token = "";
+
+async function login() {
+  const res = await fetch("http://localhost:5000/login", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      email: email.value,
+      password: password.value
+    })
+  });
+  const data = await res.json();
+  token = data.token;
+  loadTasks();
+}
+
+async function createTask() {
+  await fetch("http://localhost:5000/tasks", {
+    method: "POST",
+    headers: {
+      "Content-Type":"application/json",
+      "Authorization": token
+    },
+    body: JSON.stringify({
+      title: title.value,
+      status: "Todo"
+    })
+  });
+  loadTasks();
+}
+
+async function loadTasks() {
+  const res = await fetch("http://localhost:5000/tasks", {
+    headers: { "Authorization": token }
+  });
+  const tasks = await res.json();
+  tasksEl.innerHTML = tasks.map(t => `<li>${t.title} - ${t.status}</li>`).join("");
+}
+</script>
+
+</body>
+</html>
